@@ -8,7 +8,9 @@ class Venta extends Model
 {
     protected $table = 'venta';
     protected $primaryKey = 'ventaid';
-    public $timestamps = false;
+    
+    const CREATED_AT = 'fechacreacion';
+    const UPDATED_AT = null;
 
     protected $fillable = [
         'produccionid',
@@ -16,11 +18,17 @@ class Venta extends Model
         'cantidadkg',
         'preciokg',
         'fechaventa',
-        'total',
         'observaciones',
     ];
 
-    // 🔹 Cada venta pertenece a una producción
+    protected $casts = [
+        'cantidadkg' => 'decimal:2',
+        'preciokg' => 'decimal:2',
+        'total' => 'decimal:2',
+        'fechaventa' => 'date',
+        'fechacreacion' => 'datetime'
+    ];
+
     public function produccion()
     {
         return $this->belongsTo(Produccion::class, 'produccionid');

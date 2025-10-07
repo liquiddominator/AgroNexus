@@ -8,7 +8,9 @@ class Insumo extends Model
 {
     protected $table = 'insumo';
     protected $primaryKey = 'insumoid';
-    public $timestamps = false;
+    
+    const CREATED_AT = 'fechacreacion';
+    const UPDATED_AT = 'fechamodificacion';
 
     protected $fillable = [
         'nombre',
@@ -19,11 +21,25 @@ class Insumo extends Model
         'proveedor',
         'preciounitario',
         'descripcion',
+        'activo',
     ];
 
-    // 🔹 Un insumo puede usarse en muchos lotes (relación con pivote LoteInsumo)
+    protected $casts = [
+        'stock' => 'decimal:2',
+        'stockminimo' => 'decimal:2',
+        'preciounitario' => 'decimal:2',
+        'activo' => 'boolean',
+        'fechacreacion' => 'datetime',
+        'fechamodificacion' => 'datetime'
+    ];
+
     public function lotes()
     {
         return $this->hasMany(LoteInsumo::class, 'insumoid');
+    }
+
+    public function necesitaReposicion()
+    {
+        return $this->stock <= $this->stockminimo;
     }
 }

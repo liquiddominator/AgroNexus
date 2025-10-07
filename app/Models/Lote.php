@@ -8,7 +8,9 @@ class Lote extends Model
 {
     protected $table = 'lote';
     protected $primaryKey = 'loteid';
-    public $timestamps = false;
+    
+    const CREATED_AT = 'fechacreacion';
+    const UPDATED_AT = 'fechamodificacion';
 
     protected $fillable = [
         'usuarioid',
@@ -20,44 +22,70 @@ class Lote extends Model
         'estadoactual',
         'latitud',
         'longitud',
-        'fechacreacion',
-        'fechamodificacion',
         'imagenurl',
+        'activo',
     ];
 
-    // 🔹 Un lote pertenece a un usuario (agricultor)
+    protected $casts = [
+        'superficie' => 'decimal:2',
+        'latitud' => 'decimal:7',
+        'longitud' => 'decimal:7',
+        'fechasiembra' => 'date',
+        'activo' => 'boolean',
+        'estadoactual' => 'integer',
+        'fechacreacion' => 'datetime',
+        'fechamodificacion' => 'datetime'
+    ];
+
     public function usuario()
     {
         return $this->belongsTo(Usuario::class, 'usuarioid');
     }
 
-    // 🔹 Un lote tiene muchos estados
+    public function estadoActual()
+{
+    return $this->belongsTo(EstadoLote::class, 'estadoactual', 'estadoid')
+                ->whereRaw('CAST(lote.estadoactual AS INTEGER) = estadolote.estadoid');
+}
+
     public function estados()
     {
         return $this->hasMany(EstadoLote::class, 'loteid');
     }
 
-    // 🔹 Un lote puede tener muchas producciones
     public function producciones()
     {
         return $this->hasMany(Produccion::class, 'loteid');
     }
 
-    // 🔹 Un lote puede tener muchos insumos usados
     public function insumos()
     {
         return $this->hasMany(LoteInsumo::class, 'loteid');
     }
 
-    // 🔹 Un lote puede tener muchas actividades
     public function actividades()
     {
         return $this->hasMany(Actividad::class, 'loteid');
     }
 
-    // 🔹 Un lote puede tener registros climáticos
     public function climas()
     {
         return $this->hasMany(Clima::class, 'loteid');
     }
+
+public function estadoActualCatalogo()
+{
+    return $this->belongsTo(CatalogoEstado::class, 'estadoactual', 'catalogo_estado_id');
+}
+
+public function historialEstados()
+{
+    return $this->hasMany(HistorialEstadoLote::class, 'loteid');
+}
+
+public function estadoActualHistorial()
+{
+    return $this->hasOne(HistorialEstadoLote::class, 'loteid')->latest('fecha_cambio');
+}
+
 }

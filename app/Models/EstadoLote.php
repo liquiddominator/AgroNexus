@@ -18,7 +18,18 @@ class EstadoLote extends Model
         'imagenurl',
     ];
 
-    // 🔹 Cada estado pertenece a un lote
+    // Obtener solo los estados del catálogo (maestros)
+    public static function catalogo()
+    {
+        return self::whereNull('loteid')->get();
+    }
+
+    // Obtener solo el historial de estados
+    public static function historial($loteid)
+    {
+        return self::where('loteid', $loteid)->get();
+    }
+
     public function lote()
     {
         return $this->belongsTo(Lote::class, 'loteid');

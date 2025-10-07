@@ -8,7 +8,9 @@ class Produccion extends Model
 {
     protected $table = 'produccion';
     protected $primaryKey = 'produccionid';
-    public $timestamps = false;
+    
+    const CREATED_AT = 'fechacreacion';
+    const UPDATED_AT = null;
 
     protected $fillable = [
         'loteid',
@@ -19,13 +21,17 @@ class Produccion extends Model
         'observaciones',
     ];
 
-    // 🔹 Una producción pertenece a un lote
+    protected $casts = [
+        'cantidadkg' => 'decimal:2',
+        'fechacosecha' => 'date',
+        'fechacreacion' => 'datetime'
+    ];
+
     public function lote()
     {
         return $this->belongsTo(Lote::class, 'loteid');
     }
 
-    // 🔹 Una producción puede estar vinculada a una venta
     public function ventas()
     {
         return $this->hasMany(Venta::class, 'produccionid');

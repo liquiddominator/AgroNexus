@@ -8,7 +8,9 @@ class Actividad extends Model
 {
     protected $table = 'actividad';
     protected $primaryKey = 'actividadid';
-    public $timestamps = false;
+    
+    const CREATED_AT = 'fechacreacion';
+    const UPDATED_AT = null;
 
     protected $fillable = [
         'loteid',
@@ -18,16 +20,21 @@ class Actividad extends Model
         'fechafin',
         'tipoactividad',
         'prioridad',
+        'estado',
         'observaciones',
     ];
 
-    // 🔹 Una actividad pertenece a un lote
+    protected $casts = [
+        'fechainicio' => 'datetime',
+        'fechafin' => 'datetime',
+        'fechacreacion' => 'datetime'
+    ];
+
     public function lote()
     {
         return $this->belongsTo(Lote::class, 'loteid');
     }
 
-    // 🔹 Una actividad pertenece a un usuario
     public function usuario()
     {
         return $this->belongsTo(Usuario::class, 'usuarioid');
